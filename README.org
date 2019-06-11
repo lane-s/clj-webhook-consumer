@@ -1,0 +1,98 @@
+#+TITLE: clj-webhook-consumer
+#+AUTHOR: Lane Spangler
+#+EMAIL: las4vc@virginia.edu
+
+[[https://travis-ci.com/lane-s/clj-webhook-consumer][file:https://travis-ci.com/lane-s/clj-webhook-consumer.svg?branch=master]]
+
+* Usage
+** Create your configuration file 
+
+clj-webhook-consumer uses a configuration file to set up your endpoints.
+#+BEGIN_SRC yaml
+  hooks:
+    - name: dockerhub
+      script: ./new-image-alert.sh
+    - name: github
+      script: ./repo-pushed-alert.sh
+#+END_SRC
+
+This will set up endpoints at ~localhost:3000/dockerhub~ and ~localhost:3000/github~ that will respond to events by running the specified shell script.
+
+You can also map any json data received from the webhook to environment variables.
+#+BEGIN_SRC yaml
+  hooks:
+    - name: dockerhub
+      script:
+        - ./echo-repo-description.sh
+        - ./copy-dockerfile.sh
+      env:
+        repository:
+          full_description: FULL_DESCRIPTION
+          dockerfile: auto
+#+END_SRC
+
+This example expects json like the following:
+#+BEGIN_SRC json
+  {
+    "repository": {
+       "full_description": "A description of the repository that was pushed to",
+       "dockerfile": "The contents of the Dockerfile used for the build"
+     }
+  }
+#+END_SRC
+
+When the scripts run, the environment variables will be set accordingly:
+#+BEGIN_SRC bash
+  echo $FULL_DESCRIPTION => "A description of the repository that was pushed to"
+  echo $DOCKERFILE => "The contents of the Dockerfile used for the build"
+#+END_SRC
+
+** Run the server
+
+Pull the latest docker image
+
+#+BEGIN_SRC bash
+docker pull melodylane/clj-webhook-consumer:latest
+#+END_SRC
+
+Run the container, mounting your local configuration file to the correct path in the container.
+
+#+BEGIN_SRC bash
+docker run --rm --name clj-webhook-consumer -d -v ./clj-webhook-config.yaml:/clj-webhook-config.yaml
+#+END_SRC
+
+** TODO Add An example using clj-webhook-consumer with nginx using docker-compose
+* Development
+** Run the tests
+#+BEGIN_SRC bash
+lein test
+#+END_SRC
+** Run the development server
+#+BEGIN_SRC bash
+lein ring server-headless
+#+END_SRC
+** Build
+
+Creates a standalone jar and docker image
+#+BEGIN_SRC bash
+./build.sh
+#+END_SRC
+
+Run the standalone jar:
+#+BEGIN_SRC bash
+java -jar target/clj-webhook-consumer-0.1.0-SNAPSHOT-standalone.jar
+#+END_SRC
+
+* License
+Copyright © 2019 Lane Spangler
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License 2.0 which is available at
+http://www.eclipse.org/legal/epl-2.0.
+
+This Source Code may also be made available under the following Secondary
+Licenses when the conditions for such availability set forth in the Eclipse
+Public License, v. 2.0 are satisfied: GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or (at your
+option) any later version, with the GNU Classpath Exception which is available
+at https://www.gnu.org/software/classpath/license.html.~~
