@@ -34,7 +34,7 @@
   from the request body"
   [hook body-params]
   (->>
-   (get-env-kv-pairs (:env hook) body-params)
+   (get-env-kv-pairs (:body->env hook) body-params)
    (into {})))
 
 (defn- execute-scripts

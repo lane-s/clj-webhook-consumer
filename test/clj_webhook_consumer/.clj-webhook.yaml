@@ -3,7 +3,7 @@ hooks:
     script: 
       - ./test.sh
       - ./env_test.sh
-    env:
+    body->env:
       repository:
         full_description: FULL_DESCRIPTION
         dockerfile: _
