@@ -18,7 +18,7 @@ clj-webhook-consumer uses a configuration file to set up your endpoints.
       script: ./repo-pushed-alert.sh
 #+END_SRC
 
-This will set up endpoints at ~localhost:3000/dockerhub~ and ~localhost:3000/github~ that will respond to events by running the specified shell script. Only post requests are currently supported.
+This will set up endpoints at ~localhost:3000/dockerhub~ and ~localhost:3000/github~ that will respond to events by running the specified shell script.
 
 If you set the environment variable ~CLJ_WEBHOOK_KEY~, then you will need to pass it with your requests as a query parameter:
 ~https://your-domain/dockerhub?key=your_api_key~
@@ -58,6 +58,19 @@ When the scripts run, the environment variables will be set accordingly:
   echo $FULL_DESCRIPTION => "A description of the repository that was pushed to"
   echo $DOCKERFILE => "The contents of the Dockerfile used for the build"
 #+END_SRC
+
+You can also map query string parameters to environment variables:
+#+BEGIN_SRC yaml
+  hooks:
+    - name: get-hook
+      script:
+        - ./echo-param.sh
+      query->env:
+        param: PARAM
+#+END_SRC
+
+This expects a get request like this: 
+~https://your-domain.com/get-hook?key=your_api_key&param=paramval~
 
 ** Run the server
 

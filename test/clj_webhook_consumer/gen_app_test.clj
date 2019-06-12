@@ -8,15 +8,18 @@
 (def out-file-1 (str test-path "test_out.txt"))
 (def out-file-2 (str test-path "test_out_2.txt"))
 (def test-env-file (str test-path "test_env_out.txt"))
+(def test-query-file (str test-path "test_query_out.txt"))
 
 (defn out-file-fixture [f]
   (spit out-file-1 "")
   (spit out-file-2 "")
   (spit test-env-file "")
+  (spit test-query-file "")
   (f)
   (io/delete-file out-file-1)
   (io/delete-file out-file-2)
-  (io/delete-file test-env-file))
+  (io/delete-file test-env-file)
+  (io/delete-file test-query-file))
 
 (use-fixtures :once out-file-fixture)
 
@@ -33,20 +36,25 @@
                 (mock/json-body hook-body))))
 
 (deftest test-generated-routes
-  (testing "Request to testhookA runs test.sh"
-    (is (= (slurp out-file-1) ""))
-    (let [res (test-request "/testhookA?key=test_api_key")]
+  (let [res (test-request "/testhookA?key=test_api_key")]
+    (testing "Request to testhookA succeeds"
       (is (= (:status res) 200)))
-    (is (= (slurp out-file-1) "Test\n")))
 
-  (testing "Request to testhookA runs env_test.sh with environment variables set"
-    (is (= (slurp test-env-file) "Some repo\nDocker file contents\n")))
+    (testing "Request to testhookA runs test.sh"
+      (is (= (slurp out-file-1) "Test\n")))
 
-  (testing "Request to testHookB runs test_2.sh"
-    (is (= (slurp out-file-2) ""))
-    (let [res (test-request "/testhookB?key=test_api_key")]
+    (testing "Request to testhookA runs env_test.sh with environment variables set"
+      (is (= (slurp test-env-file) "Some repo\nDocker file contents\n"))))
+
+  (let [res (test-request "/testhookB?key=test_api_key&param=testparam")]
+    (testing "Request to testHookB succeeds"
       (is (= (:status res) 200)))
-    (is (= (slurp out-file-2) "Test 2\n")))
+
+    (testing "Request to testHookB runs test_2.sh"
+      (is (= (slurp out-file-2) "Test 2\n")))
+
+    (testing "Request to testHookB runs query_test.sh with environment variables set"
+      (is (= (slurp test-query-file) "testparam\n"))))
 
   (testing "Request to testHookB without key fails"
     (let [res (test-request "/testhookB")]

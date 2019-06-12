@@ -10,3 +10,6 @@ hooks:
   - name: testhookB
     script:
       - ./test_2.sh
+      - ./query_test.sh
+    query->env:
+      param: QUERY_PARAM
