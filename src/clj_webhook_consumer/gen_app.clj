@@ -70,6 +70,7 @@
      (ring/router (gen-routes path)
                   {:data {:muuntaja m/instance
                           :middleware [parameters-middleware
-                                       muuntaja/format-middleware]}}))
+                                       muuntaja/format-middleware]}})
+     (constantly {:status 404 :body "Hook not found"}))
     api-defaults))
   ([] (gen-app "")))
