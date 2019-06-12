@@ -16,7 +16,7 @@ clj-webhook-consumer uses a configuration file to set up your endpoints.
       script: ./repo-pushed-alert.sh
 #+END_SRC
 
-This will set up endpoints at ~localhost:3000/dockerhub~ and ~localhost:3000/github~ that will respond to events by running the specified shell script.
+This will set up endpoints at ~localhost:3000/dockerhub~ and ~localhost:3000/github~ that will respond to events by running the specified shell script. Only post requests are currently supported.
 
 You can also map any json data received from the webhook to environment variables.
 #+BEGIN_SRC yaml
@@ -49,31 +49,7 @@ When the scripts run, the environment variables will be set accordingly:
 
 ** Run the server
 
-Pull the latest docker image
-
-#+BEGIN_SRC bash
-docker pull melodylane/clj-webhook-consumer:latest
-#+END_SRC
-
-Run the container, mounting your local configuration file to the correct path in the container.
-
-#+BEGIN_SRC bash
-docker run --rm --name clj-webhook-consumer -d -v ./clj-webhook-config.yaml:/clj-webhook-config.yaml
-#+END_SRC
-
-** TODO Add An example using clj-webhook-consumer with nginx using docker-compose
-* Development
-** Run the tests
-#+BEGIN_SRC bash
-lein test
-#+END_SRC
-** Run the development server
-#+BEGIN_SRC bash
-lein ring server-headless
-#+END_SRC
-** Build
-
-Creates a standalone jar and docker image
+Build a standalone jar (or download the latest release)
 #+BEGIN_SRC bash
 ./build.sh
 #+END_SRC
@@ -83,6 +59,17 @@ Run the standalone jar:
 java -jar target/clj-webhook-consumer-0.1.0-SNAPSHOT-standalone.jar
 #+END_SRC
 
+The server will look for your ~.clj-webhook.yaml~ file and scripts in the directory that you run the jar.
+
+* Development
+** Run the tests
+#+BEGIN_SRC bash
+lein test
+#+END_SRC
+** Run the development server
+#+BEGIN_SRC bash
+lein run
+#+END_SRC
 * License
 Copyright © 2019 Lane Spangler
 
