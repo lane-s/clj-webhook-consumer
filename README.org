@@ -9,6 +9,7 @@
 
 clj-webhook-consumer uses a configuration file to set up your endpoints.
 #+BEGIN_SRC yaml
+  key: your_api_key
   hooks:
     - name: dockerhub
       script: ./new-image-alert.sh
@@ -18,8 +19,19 @@ clj-webhook-consumer uses a configuration file to set up your endpoints.
 
 This will set up endpoints at ~localhost:3000/dockerhub~ and ~localhost:3000/github~ that will respond to events by running the specified shell script. Only post requests are currently supported.
 
+If you include an key in your configuration, then you will need to pass it with your requests as a query parameter:
+~https://your-domain/dockerhub?key=your_api_key~
+
+#+begin_warning
+If you don't use a key, anyone will be able to trigger your scripts if they know the url
+You should not send your key over http
+#+end_warning
+
+This server doesn't directly support https, but it's meant to be run behind a reverse proxy (nginx) that does. 
+
 You can also map any json data received from the webhook to environment variables.
 #+BEGIN_SRC yaml
+  key: your_api_key
   hooks:
     - name: dockerhub
       script:
