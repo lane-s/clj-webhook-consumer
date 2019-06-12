@@ -82,7 +82,7 @@ Build a standalone jar (or download the latest release)
 
 Run the standalone jar:
 #+BEGIN_SRC bash
-java -jar target/clj-webhook-consumer-0.1.0-SNAPSHOT-standalone.jar
+java -jar target/clj-webhook-consumer-0.2.0-SNAPSHOT-standalone.jar
 #+END_SRC
 
 The server will look for your ~.clj-webhook.yaml~ file and scripts in the directory that you run the jar.
