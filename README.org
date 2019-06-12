@@ -42,7 +42,7 @@ You can also map any json data received from the webhook to environment variable
       env:
         repository:
           full_description: FULL_DESCRIPTION
-          dockerfile: auto
+          dockerfile: _
 #+END_SRC
 
 This example expects json like the following:

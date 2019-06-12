@@ -7,7 +7,7 @@ hooks:
     env:
       repository:
         full_description: FULL_DESCRIPTION
-        dockerfile: auto
+        dockerfile: _
   - name: testhookB
     script:
       - ./test_2.sh

@@ -22,7 +22,7 @@
             (let [v (get value-map nk)]
               (if (map? nv)
                 (concat acc (get-env-kv-pairs nv v))
-                (let [env-name (if (= nv "auto")
+                (let [env-name (if (= nv "_")
                                  (-> (str nk) (subs 1) clojure.string/upper-case)
                                  nv)]
                   (conj acc [env-name v]))))) '() name-map))
