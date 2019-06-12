@@ -25,16 +25,21 @@
 
 (def test-app (gen-app test-path))
 
+(defn test-request [url]
+  (test-app (-> (mock/request :post url)
+                (mock/json-body hook-body))))
+
 (deftest test-generated-routes
   (testing "Request to testhookA runs test.sh"
     (is (= (slurp out-file-1) ""))
-    (let [res (test-app (-> (mock/request :post "/testhookA")
-                            (mock/json-body hook-body)))]
+    (let [res (test-request "/testhookA?key=test_api_key")]
       (is (= (:status res) 200)))
     (is (= (slurp out-file-1) "Test\n")))
   (testing "Request to testHookB runs test_2.sh"
     (is (= (slurp out-file-2) ""))
-    (let [res (test-app (-> (mock/request :post "/testhookB")
-                            (mock/json-body hook-body)))]
+    (let [res (test-request "/testhookB?key=test_api_key")]
       (is (= (:status res) 200)))
-    (is (= (slurp out-file-2) "Test 2\n"))))
+    (is (= (slurp out-file-2) "Test 2\n")))
+  (testing "Request to testHookB without key fails"
+    (let [res (test-request "/testhookB")]
+      (is (= (:status res) 401)))))

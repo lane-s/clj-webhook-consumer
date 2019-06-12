@@ -1,3 +1,4 @@
+key: test_api_key
 hooks:
   - name: testhookA
     script: 
