@@ -4,6 +4,8 @@
 
 [[https://travis-ci.com/lane-s/clj-webhook-consumer][file:https://travis-ci.com/lane-s/clj-webhook-consumer.svg?branch=master]]
 
+clj-webhook-consumer is simple Clojure server that sets up endpoints for responding to webhooks like those from dockerhub and github. For example, you configure the server to restart a docker container with an updated image when a new image is pushed to dockerhub. It's meant to be the final link in a continuous deployment system.
+
 * Usage
 ** Create your configuration file 
 
