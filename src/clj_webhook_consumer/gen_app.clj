@@ -6,11 +6,12 @@
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [muuntaja.core :as m]
             [yaml.core :as yaml]
-            [clojure.java.shell :refer [sh]])
+            [clojure.java.shell :refer [sh]]
+            [clojure.walk :refer [keywordize-keys]])
   (:gen-class))
 
 (defn- invalid-key?
-  [local-key {request-key "key"}]
+  [local-key {{request-key "key"} :query-params}]
   (and local-key (not= local-key request-key)))
 
 (defn- get-env-kv-pairs
@@ -32,9 +33,10 @@
   where keys are the names specified
   in the config and values are grabbed
   from the request body"
-  [hook body-params]
+  [hook {:keys [body-params query-params]}]
   (->>
    (get-env-kv-pairs (:body->env hook) body-params)
+   (concat (get-env-kv-pairs (:query->env hook) (keywordize-keys query-params)))
    (into {})))
 
 (defn- execute-scripts
@@ -44,6 +46,13 @@
   (doseq [script (:script hook)]
     (sh (str path script) :env env)))
 
+(defn- hook-handler
+  [key path hook req]
+  (println (:query-params req))
+  (if (invalid-key? key req) {:status 401}
+      (do (execute-scripts path hook (get-env hook req))
+          {:status 200})))
+
 (defn- hook->route
   "Transform `hook` into an endpoint
   that will execute the scripts associated
@@ -51,10 +60,9 @@
   `key`"
   [key path hook]
   [(str "/" (:name hook))
-   {:post (fn [{:keys [body-params query-params]}]
-            (if (invalid-key? key query-params) {:status 401}
-                (do (execute-scripts path hook (get-env hook body-params))
-                {:status 200})))}])
+   (let [handler (partial hook-handler key path hook)]
+     {:post handler
+      :get handler})])
 
 (defn- gen-routes
   "Generate endpoints from the config file.
