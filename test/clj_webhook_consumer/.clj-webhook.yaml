@@ -3,7 +3,11 @@ hooks:
   - name: testhookA
     script: 
       - ./test.sh
+      - ./env_test.sh
+    env:
+      repository:
+        full_description: FULL_DESCRIPTION
+        dockerfile: auto
   - name: testhookB
     script:
       - ./test_2.sh
-
