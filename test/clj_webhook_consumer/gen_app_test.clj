@@ -26,7 +26,7 @@
 (def hook-body {:repository { :full_description "Some repo"
                               :dockerfile "Docker file contents" }})
 
-(def test-app (gen-app test-path))
+(def test-app (gen-app test-path "test_api_key"))
 
 (defn test-request [url]
   (test-app (-> (mock/request :post url)

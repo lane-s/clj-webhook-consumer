@@ -59,18 +59,18 @@
 (defn- gen-routes
   "Generate endpoints from the config file.
   `path` is prepended to all script paths"
-  [path]
+  [path key]
   (let [config (yaml/from-file (str path "./.clj-webhook.yaml") true)]
-    (map (partial hook->route (:key config) path) (:hooks config))))
+    (map (partial hook->route key path) (:hooks config))))
 
 (defn gen-app
-  ([path]
+  ([path key]
    (wrap-defaults
     (ring/ring-handler
-     (ring/router (gen-routes path)
+     (ring/router (gen-routes path key)
                   {:data {:muuntaja m/instance
                           :middleware [parameters-middleware
                                        muuntaja/format-middleware]}})
      (constantly {:status 404 :body "Hook not found"}))
     api-defaults))
-  ([] (gen-app "")))
+  ([] (gen-app "" (System/getenv "CLJ_WEBHOOK_KEY"))))
