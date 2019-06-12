@@ -6,11 +6,6 @@ jobs:
   include:
     - stage: test
       script: lein test
-    - stage: build
-      script:
-        - ./build.sh
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --pasword-stdin
-        - docker push melodylane/clj-webhook-consumer:latest
 branches:
   only:
     - master
