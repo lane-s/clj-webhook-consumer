@@ -37,7 +37,7 @@ You can also map any json data received from the webhook to environment variable
       script:
         - ./echo-repo-description.sh
         - ./copy-dockerfile.sh
-      env:
+      body->env:
         repository:
           full_description: FULL_DESCRIPTION
           dockerfile: _
