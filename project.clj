@@ -6,12 +6,13 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [metosin/reitit "0.3.7"]
                  [ring/ring-defaults "0.3.2"]
-                 [ring/ring-jetty-adapter "1.7.1"]]
-  :plugins [[lein-ring "0.12.5"]]
-  :ring {:handler clj-webhook-consumer.handler/app }
+                 [ring/ring-jetty-adapter "1.7.1"]
+                 [org.flatland/ordered "1.5.7"]
+                 [io.forward/yaml "1.0.9"]
+                 [metosin/muuntaja "0.6.4"]]
   :main ^:skip-aot clj-webhook-consumer.core
   :target-path "target/%s"
   :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                                   [ring/ring-mock "0.3.2"]]}
              :uberjar {:aot :all
-                       :main clj-webhook-consumer.main}})
+                       :main clj-webhook-consumer.core}})

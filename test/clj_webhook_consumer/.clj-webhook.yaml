@@ -1,0 +1,8 @@
+hooks:
+  - name: testhookA
+    script: 
+      - ./test.sh
+  - name: testhookB
+    script:
+      - ./test_2.sh
+
