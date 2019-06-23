@@ -12,8 +12,6 @@
 
 (defn- invalid-key?
   [local-key {{request-key "key"} :query-params}]
-  (println request-key)
-  (println local-key)
   (and local-key (not= local-key request-key)))
 
 (defn- get-env-kv-pairs
@@ -37,7 +35,7 @@
   from the request body"
   [hook {:keys [body-params query-params]}]
   (->>
-   (get-env-kv-pairs (:body->env hook) body-params)
+   (get-env-kv-pairs (:body->env hook) (keywordize-keys body-params))
    (concat (get-env-kv-pairs (:query->env hook) (keywordize-keys query-params)))
    (into {})))
 
@@ -52,6 +50,8 @@
   [key path hook req]
   (if (invalid-key? key req) {:status 401}
       (do (execute-scripts path hook (get-env hook req))
+          (println "Running script " path " with environment variables: ")
+          (println (get-env hook req))
           {:status 200})))
 
 (defn- hook->route
