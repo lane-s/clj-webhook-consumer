@@ -12,6 +12,8 @@
 
 (defn- invalid-key?
   [local-key {{request-key "key"} :query-params}]
+  (println request-key)
+  (println local-key)
   (and local-key (not= local-key request-key)))
 
 (defn- get-env-kv-pairs
@@ -48,7 +50,6 @@
 
 (defn- hook-handler
   [key path hook req]
-  (println (:query-params req))
   (if (invalid-key? key req) {:status 401}
       (do (execute-scripts path hook (get-env hook req))
           {:status 200})))
